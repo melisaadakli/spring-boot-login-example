@@ -56,26 +56,38 @@ public class JwtUtils {
         .parseClaimsJws(token).getBody().getSubject();
   }
   
-  private Key key() {
+private Key key() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
+  private void logJwtError(String message, Exception e) {
+    if (logger.isErrorEnabled()) {
+        logger.error(message, e.getMessage());
+    }
+}
 
   public boolean validateJwtToken(String authToken) {
     try {
-      Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
-      return true;
+        Jwts.parserBuilder()
+            .setSigningKey(key())
+            .build()
+            .parse(authToken);
+        return true;
+
     } catch (MalformedJwtException e) {
-      logger.error("Invalid JWT token: {}", e.getMessage());
+        logJwtError("Invalid JWT token: {}", e);
+
     } catch (ExpiredJwtException e) {
-      logger.error("JWT token is expired: {}", e.getMessage());
+        logJwtError("JWT token is expired: {}", e);
+
     } catch (UnsupportedJwtException e) {
-      logger.error("JWT token is unsupported: {}", e.getMessage());
+        logJwtError("JWT token is unsupported: {}", e);
+
     } catch (IllegalArgumentException e) {
-      logger.error("JWT claims string is empty: {}", e.getMessage());
+        logJwtError("JWT claims string is empty: {}", e);
     }
 
     return false;
-  }
+}
   
   public String generateTokenFromUsername(String username) {   
     return Jwts.builder()
@@ -85,4 +97,4 @@ public class JwtUtils {
               .signWith(key(), SignatureAlgorithm.HS256)
               .compact();
   }
-}
+  }
