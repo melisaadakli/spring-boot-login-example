@@ -18,8 +18,11 @@ import java.io.*;
 import java.nio.channels.*;
 import java.util.Properties;
 
-public class MavenWrapperDownloader {
+public final class MavenWrapperDownloader {
 
+    private MavenWrapperDownloader() {
+        throw new UnsupportedOperationException("Utility class");
+    }
     private static final String WRAPPER_VERSION = "0.5.6";
     /**
      * Default URL to download the maven-wrapper.jar from, if no 'downloadUrl' is provided.
